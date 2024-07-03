@@ -1,0 +1,5 @@
+#include "Matrix.h"
+#include "functions.h"
+#include "linAlgebra.h"
+#include "cnn.h"
+#include "train.h"
