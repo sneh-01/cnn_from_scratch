@@ -1,25 +1,12 @@
-
 #ifndef TRAIN_H
 #define TRAIN_H
 
-#include "CNN.h"
-#include "Matrix.h"
-#include "linAlgebra.h"
-#include  "functions.h"
 #include "cnn.h"
+#include "Matrix.h"
+#include <vector>
+#include <memory>
 
-
-class Trainer {
-public:
-    Trainer(CNN& cnn, double learning_rate, unsigned int epochs)
-        : cnn(cnn), learning_rate(learning_rate), epochs(epochs) {}
-
-    void train(std::vector<std::unique_ptr<Matrix>>& Xtrain, std::vector<std::unique_ptr<std::vector<double>>>& Ytrain);
-
-private:
-    CNN& cnn;
-    double learning_rate;
-    unsigned int epochs;
-};
+void train(CNN& cnn, const std::vector<std::unique_ptr<Matrix>>& X_train, 
+           const std::vector<std::vector<double>>& Y_train, unsigned int epochs, double learning_rate);
 
 #endif // TRAIN_H

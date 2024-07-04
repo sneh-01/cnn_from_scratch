@@ -1,1 +1,1 @@
-# cnn-in-c-
+# cnn in c++

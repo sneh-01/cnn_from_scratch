@@ -17,6 +17,10 @@ public:
 
     void forward_pass(const std::unique_ptr<Matrix>& input);
     void backward_pass(const std::vector<double>& expected_output, double learning_rate);
+    void info();
+    std::vector<double> get_output() const;
+    double cross_entropy(std::unique_ptr<std::vector<double> > &ypred, 
+					std::unique_ptr<std::vector<double> > &ytrue);
 
 private:
     Shape input_dim;

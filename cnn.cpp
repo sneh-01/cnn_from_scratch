@@ -1,11 +1,14 @@
 #include "cnn.h"
 #include "functions.h"
 #include "linAlgebra.h"
-#include<random>
-#include<vector>
-#include<memory>
-#include "Matrix.h" 
+#include <random>
+#include <vector>
+#include <memory>
+#include "Matrix.h"
 #include <cmath>
+#include <assert.h>
+
+using namespace std;
 
 CNN::CNN(Shape input_dim, Shape kernel_size, Shape pool_size, unsigned int hidden_layer_nodes, unsigned int output_dim)
     : input_dim(input_dim), kernel_size(kernel_size), pool_size(pool_size)
@@ -20,11 +23,7 @@ CNN::CNN(Shape input_dim, Shape kernel_size, Shape pool_size, unsigned int hidde
     this->weights.push_back(std::move(W1));
 }
 
-
-
-
-
-void CNN::forward_pass(const std::unique_ptr<Matrix>& input)
+void CNN::forward_pass(const std::unique_ptr<Matrix> &input)
 {
     // Convolution 1
     auto conv1 = cnn::convolution(input, kernel);
@@ -76,50 +75,50 @@ void CNN::backward_pass(const std::vector<double>& expected_output, double learn
     std::vector<double> delta_L = np::subtract(*activations.back(), expected_output);
 
     // Backpropagation through output layer
-    auto dW1 = np::dot(activations[1], delta_L);
-    dW1 = np::multiply(dW1, learning_rate);
-    weights[1] = np::subtract(weights[1], dW1);
+    auto delta_output = np::applyFunction(*activations[1], func::relu_gradient);
+    std::vector<double> delta_h = np::multiply(delta_L, delta_output);
 
-    // Delta calculation for hidden layer
-    auto delta_h = np::dot(weights[1], delta_L);
-    auto active = np::applyFunction(activations[1], func::relu_gradient);
-    delta_h = np::multiply(delta_h, active);
+    // Update weights and biases for output layer
+    cnn::update_weights(activations[1], delta_h, weights[1], learning_rate);
+    cnn::update_bias(delta_h, biases[1], learning_rate);
 
     // Backpropagation through hidden layer
-    auto dW0 = np::dot(activations[0], delta_h, 1);
-    dW0 = np::multiply(dW0, learning_rate);
-    weights[0] = np::subtract(weights[0], dW0);
+    auto delta_hidden = np::applyFunction(*activations[0], func::relu_gradient);
+    delta_h = np::multiply(np::dot(weights[1], delta_h), delta_hidden);
 
-    // Backpropagation through convolutional layers
-    auto delta_x = np::dot(weights[0], delta_h);
-    active = np::applyFunction(activations[0], func::relu_gradient);
+    // Update weights and biases for hidden layer
+    cnn::update_weights(activations[0], delta_h, weights[0], learning_rate);
+    cnn::update_bias(delta_h, biases[0], learning_rate);
 
-    std::unique_ptr<Matrix> delta_conv(new Matrix(conv_activations[0]->getRows(), conv_activations[0]->getColumns(), false));
-    unsigned int counter = 0;
-    for (unsigned int r = 0; r < conv_activations[0]->getRows(); ++r) {
-        for (unsigned int c = 0; c < conv_activations[0]->getColumns(); ++c) {
-            if (conv_activations[0]->get(r, c) == 1.0) {
-                delta_conv->set(r, c, (*delta_x)[counter++]);
-            }
+    // Backpropagation through second convolutional layer
+    auto delta_conv2 = np::applyFunction(*conv_activations[3], func::relu_gradient);
+    update_kernel(delta_conv2, conv_activations[2], kernels[1], learning_rate);
+
+    // Backpropagation through first convolutional layer
+    auto delta_conv1 = np::applyFunction(*conv_activations[1], func::relu_gradient);
+    update_kernel(delta_conv1, conv_activations[0], kernels[0], learning_rate);
+}
+
+void CNN::info(){
+    	cout << "Kernel size: (" << kernel->getRows() << "," << kernel->getColumns() << ")" << endl;
+        for(unsigned int i = 0; i < weights.size(); i++){
+            cout << "Weight "<< i << " size: (" << weights[i]->getRows() << "," << weights[i]->getColumns() << ")" << endl;
         }
-    }
+}
 
-    // Update kernel
-    update_kernel(delta_conv, conv_activations[0]);
+std::vector<double> CNN::get_output() const {
+    return *activations.back();
+}
+
+double CNN::cross_entropy(std::unique_ptr<std::vector<double> > &ypred, 
+					std::unique_ptr<std::vector<double> > &ytrue){
+	
+	assert(ypred->size() == ytrue->size());
+	std::unique_ptr<std::vector<double> > z = np::applyFunction(ypred,log);
+	z = np::multiply(z,ytrue);
+	double error = np::element_sum(z);
+	return (-error);
 }
 
 
-
-
-
-
-void CNN::update_kernel(const std::unique_ptr<Matrix>& delta_conv, const std::unique_ptr<Matrix>& input)
-{
-    for (int i = 0; i < kernel->getRows(); ++i) {
-        for (int j = 0; j < kernel->getColumns(); ++j) {
-            double delta = np::multiply(delta_conv, input, i, j);
-            kernel->set(i, j, delta);
-        }
-    }
-}
 
