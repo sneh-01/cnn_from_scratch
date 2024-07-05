@@ -10,25 +10,7 @@ using namespace std;
 
 Matrix::Matrix(){}
 
-Matrix::Matrix(int rows, int columns, bool init){
-	/*	If init=false, initialize with 0 matrix
-	 *	If init=true, initialize with random matrix
-	 */
-	this -> rows = rows;
-	this -> columns = columns;
-	this -> array = vector<vector <double> >(rows, vector<double>(columns));
 	
-	int factor = 0;
-	if (init) factor=1;
-	// initialize Matrix using random numbers
-	std::uniform_real_distribution<double> unif(-1,1); // uniform distribution lower and upper bound
-	for(unsigned int i = 0; i < rows; i++){
-		for(unsigned int j = 0; j < columns; j++){
-			double a = unif(random_engine);
-			this -> array[i][j] = (a * factor);	
-		}
-	}
-}
 
 Matrix::Matrix(vector<vector <double> > const &array){
 	assert(array.size() != 0);

@@ -5,7 +5,7 @@
 #include<time.h>
 #include<float.h>
 #include "linAlgebra.h"
-// #include<opencv2/opencv.h>
+#include<opencv2/opencv.h>
 
 
 
