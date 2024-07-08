@@ -11,6 +11,7 @@ using namespace std;
 namespace np{
 
 	// scalar multiplication
+	// scalling the weights or gradients during back propogation
 	std::unique_ptr<Matrix> multiply(std::unique_ptr<Matrix> & m1, double value){
 		std::unique_ptr<Matrix> m3(new Matrix(m1->getRows(), m1->getColumns(), false));
 		for(unsigned int i=0; i < m1->getRows(); i++){
@@ -22,6 +23,7 @@ namespace np{
 	}
 
 	// hadamard product of matrices
+	// element wise activation or for reguralization(relu)
 	std::unique_ptr<Matrix> multiply(std::unique_ptr<Matrix> & m1, std::unique_ptr<Matrix> & m2,
 										unsigned int slice){
 		assert(m1->getRows() == m2->getRows() && m1->getColumns() == m2->getColumns() - slice);
@@ -36,6 +38,7 @@ namespace np{
 	}
 	
 	// hadamard product of vectors
+// droupout
 	std::unique_ptr<std::vector<double> > multiply(std::unique_ptr<std::vector<double> > &v1, 
 				std::unique_ptr<std::vector<double> > &v2){
 		assert(v1->size() == v2->size());
@@ -47,6 +50,7 @@ namespace np{
 	}
 
 	// take dot product and sum all elements
+	// cnn opration between input and kernal(feature extraction)
 	double multiply(std::unique_ptr<Matrix> & m1, std::unique_ptr<Matrix> & m2,
 					unsigned int xslice, unsigned int yslice){
 		assert(m2->getRows() >= m1->getRows() && m2->getColumns() >= m1->getColumns());
@@ -60,6 +64,7 @@ namespace np{
 	}
 
 	// dot product between two matrices
+	// weighted sim of fully connnected layer
 	std::unique_ptr<Matrix> dot(std::unique_ptr<Matrix> & m1, std::unique_ptr<Matrix> & m2, 
 								unsigned int slice){
 		assert(m1->getColumns() == m2->getRows());
@@ -78,6 +83,8 @@ namespace np{
 	}
 
 	// dot product with a vetor
+	// After applying weights (stored in m1) to the input vector (v)
+	// flatten input and connected layer 
 	std::unique_ptr<std::vector<double> > dot(std::unique_ptr<Matrix> & m1,
 					std::unique_ptr<std::vector<double> > & v, unsigned int v_slice){
 		assert(m1->getColumns() == v->size() - v_slice);
@@ -93,6 +100,7 @@ namespace np{
 	}
 	
 	// dot product of 2 vectors returning a Rank 1 Matrix
+	// sim ilaritie score.
 	std::unique_ptr<Matrix> dot(std::unique_ptr<std::vector<double> > & v1, 
 								std::unique_ptr<std::vector<double> > & v2, unsigned int v2_slice){
 		std::unique_ptr<Matrix> m3(new Matrix(v1->size(), v2->size() - v2_slice, true));
@@ -105,6 +113,7 @@ namespace np{
 	}
 
 	// addition
+	// forward pass or backpropogation weight or kernal updation
 	std::unique_ptr<Matrix> add(std::unique_ptr<Matrix> & m1, std::unique_ptr<Matrix> & m2){
 		assert(m1->getRows() == m2->getRows() && m1->getColumns() == m2->getColumns());
 
@@ -118,6 +127,7 @@ namespace np{
 	}
 
 	// subtraction (of matrices)
+	// gradient decent
 	std::unique_ptr<Matrix> subtract(std::unique_ptr<Matrix> & m1, std::unique_ptr<Matrix> & m2){
 		assert(m1->getRows() == m2->getRows() && m1->getColumns() == m2->getColumns());
 
@@ -130,18 +140,7 @@ namespace np{
 		return m3;
 	}
 
-	// subtraction (of vectors)
-	std::unique_ptr<std::vector<double> > subtract(std::unique_ptr<std::vector<double> > & v1, 
-														std::unique_ptr<std::vector<double> > & v2){
-		assert(v1->size() == v2->size());
-
-		std::unique_ptr<std::vector<double> > vr = std::make_unique<std::vector<double> >();
-		for(unsigned int i=0; i < v1->size(); i++){
-			vr->push_back(v1->at(i) - v2->at(i));
-		}
-		return vr;
-	}
-
+ 
 	// transpose
 	std::unique_ptr<Matrix> transpose(std::unique_ptr<Matrix> & m1){
 		std::unique_ptr<Matrix> m3(new Matrix(m1->getColumns(), m1->getRows(), false));
@@ -198,7 +197,7 @@ namespace np{
 		return m3;
 	}
 	
-	// concatenate matrix with a vector as additional column
+	// concatenate matrix with a vector as additional column(dataser)
 	std::unique_ptr<Matrix> concatenate(std::unique_ptr<Matrix> & m1, std::vector<double> & v){
 		assert(m1->getRows() == v.size());
 
@@ -229,6 +228,7 @@ namespace np{
 	}
 	
 	// normalize a vector such that sum of all elements is 1
+	// normalize the input
 	std::unique_ptr<std::vector<double> > normalize(std::unique_ptr<std::vector<double> > &v){
 		std::unique_ptr<std::vector<double> > vr = std::make_unique<std::vector<double> >();
 		double sum = 0;
@@ -243,17 +243,19 @@ namespace np{
 	}
 	
 	// return sum of all elements in matrix
-	double element_sum(std::unique_ptr<Matrix> & m1){
-		double sum = 0;
-		for(unsigned int i=0; i < m1->getRows(); i++){
-			for(unsigned int j=0; j < m1->getColumns(); j++){
-				sum += m1->get(i,j);
+	// check probablitie distribution
+		double element_sum(std::unique_ptr<Matrix> & m1){
+			double sum = 0;
+			for(unsigned int i=0; i < m1->getRows(); i++){
+				for(unsigned int j=0; j < m1->getColumns(); j++){
+					sum += m1->get(i,j);
+				}
 			}
+			return sum;
 		}
-		return sum;
-	}
 
 	//	return sum of all elements in a vector
+	// for calculating normalization
 	double element_sum(std::unique_ptr<std::vector<double> > &v){
 		double sum = 0;
 		for(unsigned int i=0; i < v->size(); i++){
@@ -263,6 +265,7 @@ namespace np{
 	}
 	
 	// flatten the matrix. convert 2D matrix to 1D vector
+	// pooling flatten
 	std::unique_ptr<std::vector<double> > flatten(std::unique_ptr<Matrix> & m1){
 		std::unique_ptr<std::vector<double> > v(new std::vector<double>(m1->getRows() * m1->getColumns()));
 
@@ -275,7 +278,7 @@ namespace np{
 	}
 	
 	// return the maximum of matrix within the boundaries specified by (xptr, yptr, window)
-	// set the index of maximum element in index variable
+	// set the index of maximum element in index variable ---max pooling
 	double maximum(std::unique_ptr<Matrix> & m1, unsigned int xptr, unsigned int yptr, 
 					Shape window, std::unique_ptr<Shape> &index){
 		assert(xptr + window.rows <= m1->getRows() && yptr + window.columns <= m1->getColumns());
@@ -298,6 +301,7 @@ namespace np{
 	}
 
 	// reshape a vector into a matrix
+	// 1d to input matrix
 	std::unique_ptr<Matrix> reshape(std::unique_ptr<std::vector<double> > &v, Shape shape){
 		assert((shape.rows * shape.columns) == v->size());
 		std::unique_ptr<Matrix> m3(new Matrix(shape.rows, shape.columns, true));
