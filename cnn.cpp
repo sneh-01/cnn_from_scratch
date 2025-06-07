@@ -121,4 +121,59 @@ double CNN::cross_entropy(std::unique_ptr<std::vector<double> > &ypred,
 }
 
 
+// int CNN::forward_propagate(std::unique_ptr<Matrix> &input,
+// 	std::vector<std::unique_ptr<Matrix> > &conv_activations, 
+// 	std::vector<std::unique_ptr<std::vector<double> > > &activations){
+	
+// 	assert(weights.size() == 2); 
+// 	std::unique_ptr<Matrix> conv = std::make_unique<Matrix>(input->getRows() - kernel->getRows() + 1,
+// 							input->getColumns() - kernel->getColumns() + 1, true);	
+
+// 	for(unsigned int i = 0; i < conv->getRows(); i++){
+// 		for(unsigned int j = 0; j < conv->getColumns(); j++){
+// 			conv->set(i,j,np::multiply(kernel, input, i, j));				
+// 		}
+// 	}
+// 	conv = np::applyFunction(conv, fns::relu);
+
+// 	unsigned int x = (conv->getRows()/pool_window.rows);
+// 	unsigned int y = (conv->getColumns()/pool_window.columns);
+	
+// 	std::unique_ptr<Matrix>	pool = std::make_unique<Matrix>(conv->getRows(), conv->getColumns(), false);
+// 	std::unique_ptr<std::vector<double> > pool_flatten = std::make_unique<std::vector<double> >();
+
+// 	unsigned int xptr=0, yptr=0;
+// 	auto max_index = std::make_unique<Shape>(Shape{0,0});
+// 	for(unsigned int i=0; i < x; i++){
+// 		xptr = (i * pool_window.rows);
+// 		for(unsigned int j=0; j < y; j++){
+// 			yptr = (j * pool_window.columns);
+// 			double max = np::maximum(conv, xptr, yptr, pool_window, max_index);
+// 			pool_flatten->push_back(max);
+// 			pool->set(max_index->rows, max_index->columns, 1);
+// 		}
+// 	}
+	
+// 	conv_activations[0] = std::move(pool);
+
+// 	pool_flatten->push_back(1);
+
+
+// 	std::unique_ptr<Matrix> W0 = np::transpose(weights[0]);
+// 	std::unique_ptr<std::vector<double> > hidden = np::dot(W0, pool_flatten);
+// 	hidden = np::applyFunction(hidden, fns::relu);
+// 	hidden->push_back(1);
+
+// 	activations[0] = std::move(pool_flatten);
+
+// 	std::unique_ptr<Matrix> W1 = np::transpose(weights[1]);
+// 	std::unique_ptr<std::vector<double> > output = np::dot(W1, hidden);
+// 	output = np::applyFunction(output, fns::softmax);
+// 	output = np::normalize(output); 
+	
+// 	activations[1] = std::move(hidden);
+// 	activations[2] = std::move(output);
+// 	return 0;
+// }
+
 

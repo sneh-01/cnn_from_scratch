@@ -4,6 +4,7 @@
 #include "cnn.h"
 #include "train.h"
 
+
 #ifndef TEST_H
 #define TEST_H
 

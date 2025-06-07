@@ -5,7 +5,10 @@
 #include<time.h>
 #include<float.h>
 #include "linAlgebra.h"
-#include<opencv2/opencv.h>
+// #include<opencv2/opencv.hpp>
+#include <iostream>
+#include<linAlgebra.h>
+// #include<lin
 
 
 
@@ -135,101 +138,101 @@ namespace cnn{
 }
 
 
-namespace pre_process{
+// namespace pre_process{
 
-    int process_GTSRB_image(const char* path, std::vector<std::unique_ptr<Matrix>>& Xtrain, 
-                        std::vector<std::unique_ptr<std::vector<double>>>& Ytrain, unsigned int nr_images) {
-    std::string str(path);  // convert char* to string
-    const int width = 28;
-    const int height = 28;
-    const int LABELS = 43;
+//     int process_GTSRB_image(const char* path, std::vector<std::unique_ptr<Matrix>>& Xtrain, 
+//                         std::vector<std::unique_ptr<std::vector<double>>>& Ytrain, unsigned int nr_images) {
+//     std::string str(path);  // convert char* to string
+//     const int width = 28;
+//     const int height = 28;
+//     const int LABELS = 43;
 
-    for(unsigned int i=0 ; i< LABELS; i++){
-        std::vector<cv::string> files;
-        cv::glob(path + std::to_string(i), files, true);
+//     for(unsigned int i=0 ; i< LABELS; i++){
+//         std::vector<cv::string> files;
+//         cv::glob(path + std::to_string(i), files, true);
 
-        for(unsigned int k=0; k < (nr_images / LABELS); k++){
-        cv::Mat img = cv::imread(files[k]);
-        if(img.empty()) continue;
+//         for(unsigned int k=0; k < (nr_images / LABELS); k++){
+//         cv::Mat img = cv::imread(files[k]);
+//         if(img.empty()) continue;
         
-        unique_ptr<Matrix> image = make_unique<Matrix>(width, height , true);
-        for(unsigned int h =0 ;h<height;h++){
-            for(unsigned int w=0 ; w<width ; w++){
-                image->set(h,w,(double)(img.at<uchar>(h,w)/255.0));
-            }
-            Xtrain.emplace_back(std::move(image));
-            unique_ptr<vector<double>> vr = make_unique<vector<double>>(LABELS, 0);
-            (*vr)[i] = 1.0;
-            Ytrain.emplace_back(std::move(vr));  
+//         unique_ptr<Matrix> image = make_unique<Matrix>(width, height , true);
+//         for(unsigned int h =0 ;h<height;h++){
+//             for(unsigned int w=0 ; w<width ; w++){
+//                 image->set(h,w,(double)(img.at<uchar>(h,w)/255.0));
+//             }
+//             Xtrain.emplace_back(std::move(image));
+//             unique_ptr<vector<double>> vr = make_unique<vector<double>>(LABELS, 0);
+//             (*vr)[i] = 1.0;
+//             Ytrain.emplace_back(std::move(vr));  
 
-            }
-
-
-        }
-        return 0;
-
-    }
-
-    int process_GTSRB_csv(const char* filename, std::vector<std::vector<double> > &Xtrain, 
-		std::vector<std::vector<double> > &Ytrain)
-        {
-		std::string data(filename);
-		ifstream in(data.c_str());
-
-		if(!in.is_open()) return 1;
-
-		typedef boost::tokenizer< boost::escaped_list_separator<char> > Tokenizer;
-		std::vector<std::string> svec;
-		std::string line;
-
-		while(getline(in, line)){
-			Tokenizer tok(line);
-			auto it = tok.begin();
-			int label = std::stoi(*it);
-			std::vector<double> labels(10, 0.0);
-			labels[label] = 1.0;
+//             }
 
 
-			svec.assign(std::next(it, 1), tok.end());
+//         }
+//         return 0;
 
-			std::vector<double> dvec(svec.size());
-			std::transform(svec.begin(), svec.end(), dvec.begin(), [](const std::string& val)
-			{
-				return (std::stod(val)/255); // divide by 255 for normalization, since each pixel is 8 bit
-			});
+//     }
 
-			Xtrain.push_back(dvec);
-			Ytrain.push_back(labels);
-		}
-		cout << "processed the input file" << endl;
-		return 0;
-	}
+//     int process_GTSRB_csv(const char* filename, std::vector<std::vector<double> > &Xtrain, 
+// 		std::vector<std::vector<double> > &Ytrain)
+//         {
+// 		std::string data(filename);
+// 		ifstream in(data.c_str());
 
-    void process_image(const char* filename){
-        std::vector<double> image;
-        cv::Mat img = cv :: imread(filename);
-        if(img.empty()){
-            std::cout <<"No Image" << endl;
+// 		if(!in.is_open()) return 1;
 
-        }
-        else{
-            if(img.isCountinuous()){
-                image.assign(img.datastart, img.dataend);
-                for(unsigned int j =0 ; j< image.size(); j++){
-                    cout << endl <<image.size();
-                }
-            }
-            else{
-                std::cout <<"Image is not continuous" << endl;
-            }
-        }
+// 		typedef boost::tokenizer< boost::escaped_list_separator<char> > Tokenizer;
+// 		std::vector<std::string> svec;
+// 		std::string line;
 
-    }
+// 		while(getline(in, line)){
+// 			Tokenizer tok(line);
+// 			auto it = tok.begin();
+// 			int label = std::stoi(*it);
+// 			std::vector<double> labels(42, 0.0);
+// 			labels[label] = 1.0;
+
+
+// 			svec.assign(std::next(it, 1), tok.end());
+
+// 			std::vector<double> dvec(svec.size());
+// 			std::transform(svec.begin(), svec.end(), dvec.begin(), [](const std::string& val)
+// 			{
+// 				return (std::stod(val)/255); // divide by 255 for normalization, since each pixel is 8 bit
+// 			});
+
+// 			Xtrain.push_back(dvec);
+// 			Ytrain.push_back(labels);
+// 		}
+// 		cout << "processed the input file" << endl;
+// 		return 0;
+// 	}
+
+//     void process_image(const char* filename){
+//         std::vector<double> image;
+//         cv::Mat img = cv :: imread(filename);
+//         if(img.empty()){
+//             std::cout <<"No Image" << endl;
+
+//         }
+//         else{
+//             if(img.isCountinuous()){
+//                 image.assign(img.datastart, img.dataend);
+//                 for(unsigned int j =0 ; j< image.size(); j++){
+//                     cout << endl <<image.size();
+//                 }
+//             }
+//             else{
+//                 std::cout <<"Image is not continuous" << endl;
+//             }
+//         }
+ 
+//     }
 
 
 
     
-}
+// }
 
 
 

@@ -11,8 +11,10 @@
             "-o",
         
             "-IC:\\toolbox\\eigen-3.4.0\\",
-            "-IC:\\opencv\\sources\\include\\opencv2\\opencv.hpp",
-            "-IC:\\opencv\\build\\include\\opencv2\\opencv.hpp"
+            "-IC:\\opencv\\build\\x64\\vc16\\bin",
+            "-IC:\\opencv\\build\\x64\\vc16\\lib"
+
+
 
         ],
         "group": {

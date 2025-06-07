@@ -1,5 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
+// #ifndef UTILS_H
+// #define UTILS_H
 
 #include <vector>
 #include <memory>
@@ -44,12 +44,12 @@ namespace cnn{
 
 }
 
-namespace pre_process {
-    // Assuming Matrix is defined elsewhere or forward declared
-    int process_GTSRB_image(const char* path, vector<unique_ptr<Matrix>> &X_train, vector<unique_ptr<vector<Matrix>>> &Y_train, unsigned int nr_images = 100);
-    iprocess_GTSRB_csvnt (const char* filename, vector<vector<double>> &X_train, vector<vector<double>>);
-    void process_GTSRB(const char* filename);
+// namespace pre_process {
+//     // Assuming Matrix is defined elsewhere or forward declared
+//     int process_GTSRB_image(const char* path, vector<unique_ptr<Matrix>> &X_train, vector<unique_ptr<vector<Matrix>>> &Y_train, unsigned int nr_images = 100);
+//     iprocess_GTSRB_csvnt (const char* filename, vector<vector<double>> &X_train, vector<vector<double>>);
+//     void process_GTSRB(const char* filename);
 
-}
+// }
 
-#endif // UTILS_H
+// #endif // UTILS_H
